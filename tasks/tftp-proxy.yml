@@ -1,5 +1,5 @@
 ---
-- name: Configure dhcp internal service
+- name: Configure tftp service
   shell: >
     satellite-installer --scenario capsule \
     --foreman-proxy-tftp true \
