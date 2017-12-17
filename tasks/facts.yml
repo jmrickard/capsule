@@ -1,0 +1,44 @@
+---
+- name: Find out what version of Satellite is running
+  delegate_to: "{{ satellite_fqdn }}"
+  shell: rpm -qa | grep satellite-6 | awk -F- '{ st = index($0,"-");print substr($0,st+1)}'
+  register: sat_ver
+
+- debug:
+    msg: "{{ sat_ver.stdout }}"
+
+- set_fact:
+    sat_ver: "{{ sat_ver.stdout }}"
+
+- name: Get foreman_oauth_key from satellite
+  delegate_to: "{{ satellite_fqdn }}"
+  shell: cat /etc/foreman/settings.yaml | grep consumer_key | awk '{print $2 }'
+  register: foreman_key
+
+- debug:
+    msg: "{{ foreman_key.stdout }}"
+
+- set_fact:
+    foreman_key: "{{ foreman_key.stdout }}"
+
+- name: Get foreman_oauth_secret from satellite
+  delegate_to: "{{ satellite_fqdn }}"
+  shell: cat /etc/foreman/settings.yaml | grep consumer_secret | awk '{print $2 }'
+  register: foreman_secret
+
+- debug:
+    msg: "{{ foreman_secret.stdout }}"
+
+- set_fact:
+    foreman_secret: "{{ foreman_secret.stdout }}"
+
+- name: Get pulp_secret from satellite
+  delegate_to: "{{ satellite_fqdn }}"
+  shell: "cat /etc/pulp/server.conf | grep oauth_secret |grep -v ^# | awk '{print $2 }'"
+  register: pulp_secret
+
+- debug:
+    msg: "{{ pulp_secret.stdout }}"
+
+- set_fact:
+    pulp_secret: "{{ pulp_secret.stdout }}"

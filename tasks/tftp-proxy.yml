@@ -1,0 +1,6 @@
+---
+- name: Configure dhcp internal service
+  shell: >
+    satellite-installer --scenario capsule \
+    --foreman-proxy-tftp true \
+    --foreman-proxy-dhcp-server "{{ inventory_hostname }}" 

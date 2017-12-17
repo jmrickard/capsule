@@ -1,0 +1,39 @@
+---
+- name: Configure dhcp external service
+  shell: >
+    satellite-installer --scenario capsule \
+    --capsule-parent-fqdn "{{ satellite_fqdn }}" \
+    --foreman-proxy-register-in-foreman "true" \
+    --foreman-proxy-foreman-base-url "https://{{ satellite_fqdn }}" \
+    --foreman-proxy-trusted-hosts "{{ satellite_fqdn }}" \
+    --foreman-proxy-trusted-hosts "{{ inventory_hostname }}" \
+    --foreman-proxy-oauth-consumer-key "{{ foreman_key }}" \
+    --foreman-proxy-oauth-consumer-secret "{{ foreman_secret }}" \
+    --capsule-pulp-oauth-secret "{{ pulp_secret }}" \
+    --capsule-certs-tar "/root/{{ inventory_hostname }}.tar"
+    --foreman-proxy-dhcp true \
+    --foreman-proxy-dhcp-managed false \
+    --foreman-proxy-dhcp-server "{{ dhcp_server }}" 
+  when: 
+    - dhcp_managed != true
+
+- name: Configure dhcp internal service
+  shell: >
+    satellite-installer --scenario capsule \
+    --capsule-parent-fqdn "{{ satellite_fqdn }}" \
+    --foreman-proxy-register-in-foreman "true" \
+    --foreman-proxy-foreman-base-url "https://{{ satellite_fqdn }}" \
+    --foreman-proxy-trusted-hosts "{{ satellite_fqdn }}" \
+    --foreman-proxy-trusted-hosts "{{ inventory_hostname }}" \
+    --foreman-proxy-oauth-consumer-key "{{ foreman_key }}" \
+    --foreman-proxy-oauth-consumer-secret "{{ foreman_secret }}" \
+    --capsule-pulp-oauth-secret "{{ pulp_secret }}" \
+    --capsule-certs-tar "/root/{{ inventory_hostname }}.tar"
+    --foreman-proxy-dhcp true \
+    --foreman-proxy-dhcp-managed true \
+    --foreman-proxy-dhcp-server "{{ dhcp_server }}" \
+    --foreman-proxy-dhcp-gateway "{{ dhcp_gw }}" \
+    --foreman-proxy-dhcp-range '"{{ dhcp_start}} {{ dhcp_end }}"' \
+    --foreman-proxy-dhcp-interface "{{ dhcp_int }}" \
+    --foreman-proxy-dhcp-nameservers "{{ dhcp_nmsrvr }}"
+  when: dhcp_managed

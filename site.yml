@@ -1,0 +1,6 @@
+- name: Role to install Satellite-6 Capsule Server
+  hosts:
+  become: true
+  remote_user: devops
+  roles:
+    - capsule

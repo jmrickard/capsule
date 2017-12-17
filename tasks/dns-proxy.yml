@@ -1,0 +1,37 @@
+---
+- name: Configure dns external service
+  shell: >
+    satellite-installer --scenario capsule \
+    --capsule-parent-fqdn "{{ satellite_fqdn }}" \
+    --foreman-proxy-register-in-foreman "true" \
+    --foreman-proxy-foreman-base-url "https://{{ satellite_fqdn }}" \
+    --foreman-proxy-trusted-hosts "{{ satellite_fqdn }}" \
+    --foreman-proxy-trusted-hosts "{{ inventory_hostname }}" \
+    --foreman-proxy-oauth-consumer-key "{{ foreman_key }}" \
+    --foreman-proxy-oauth-consumer-secret "{{ foreman_secret }}" \
+    --capsule-pulp-oauth-secret "{{ pulp_secret }}" \
+    --capsule-certs-tar "/root/{{ inventory_hostname }}.tar"
+    --foreman-proxy-dns true \
+    --foreman-proxy-dns-managed false \
+    --foreman-proxy-dns-server "{{ dns_server }}" 
+  when: 
+    - dns_managed != true
+
+- name: Configure dns internal service
+  shell: >
+    satellite-installer --scenario capsule \
+    --capsule-parent-fqdn "{{ satellite_fqdn }}" \
+    --foreman-proxy-register-in-foreman "true" \
+    --foreman-proxy-foreman-base-url "https://{{ satellite_fqdn }}" \
+    --foreman-proxy-trusted-hosts "{{ satellite_fqdn }}" \
+    --foreman-proxy-trusted-hosts "{{ inventory_hostname }}" \
+    --foreman-proxy-oauth-consumer-key "{{ foreman_key }}" \
+    --foreman-proxy-oauth-consumer-secret "{{ foreman_secret }}" \
+    --capsule-pulp-oauth-secret "{{ pulp_secret }}" \
+    --capsule-certs-tar "/root/{{ inventory_hostname }}.tar"
+    --foreman-proxy-dns true \
+    --foreman-proxy-dns-managed true \
+    --foreman-proxy-dns-interface "{{ dns_int }}" \
+    --foreman-proxy-dns-reverse "{{ dns_reverse }}"
+    --foreman-proxy-dns-zone "{{ dns_zone }}"
+  when: dns_managed

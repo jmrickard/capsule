@@ -1,0 +1,39 @@
+---
+# defaults file for capsule
+satellite_fqdn: lpsrv-sat6.linuxlabs.example.com
+organization: linuxlabs
+activationkey: capsule
+
+# Set vars to true to enable these services. Further configuration is required if set to true.
+dhcp_svc: false
+dns_svc: false
+tftp_svc: false
+
+#Change below to true if you want DHCP and DNS to be managed by the Capsule server. If you are
+#using an external DHCP / DNS service configure {dhcp,dns}_server with the appropriate IP address.
+dhcp_managed: false
+dns_managed: false
+
+dhcp_server:
+dns_server:
+
+#Only configure these settings if Capsule will be managing the service. 
+#dhcp_nmsrvr is the dns server that will be provided to each host via dhcp.
+#dhcp_start and dhcp_end are the start and end address of your DHCP scope.
+#dhcp_int is the interface used to serve out DHCP requests.
+#dhcp_gw is the gateway of the DHCP scope.
+
+dhcp_nmsrvr:
+dhcp_start:
+dhcp_end:
+dhcp_int:
+dhcp_gw:
+
+
+#dns_int is the interface (ex: eth0, ens192) used for the DNS service
+#dns_zone is the forward dns zone (ex: example.com)
+#dns_reverse is the reverse zone (ex: 1.1.10.in-addr.arpa)
+
+dns_int:
+dns_zone:
+dns_reverse: 

@@ -1,0 +1,74 @@
+---
+# tasks file for capsule
+- name: Gather extra facts for installation
+  include: "{{ item }}"
+  with_items:
+    - facts.yml
+
+- name: Generate certificates for "{{ inventory_hostname }}"
+  delegate_to: "{{ satellite_fqdn }}"
+  shell: capsule-certs-generate --parent-fqdn "{{ satellite_fqdn }}" --capsule-fqdn "{{ inventory_hostname }}" --certs-tar "/var/www/html/pub/{{ inventory_hostname }}.tar"
+
+- name: Check for certificate tar
+  stat:
+    path: "/root/{{ inventory_hostname }}.tar"
+  register: cert
+
+- name: Get the certificate tarball from satellite
+  uri:
+    url: "https://{{ satellite_fqdn }}/pub/{{ inventory_hostname }}.tar"
+    dest: /root/
+    owner: root
+    group: root
+    mode: 0644
+    validate_certs: no
+  when: cert.stat.islnk is not defined
+  
+- name:  Satellite Certificate install
+  yum:
+    name: "https://{{ satellite_fqdn }}/pub/katello-ca-consumer-latest.noarch.rpm"
+    state: installed
+    validate_certs: no
+  
+- name: Is machine registered already?
+  command: subscription-manager status
+  register: subman_status
+  ignore_errors: yes
+
+- name: Satellite registration
+  redhat_subscription:
+    activationkey: "{{ activationkey }}"
+    org_id: "{{ organization }}"
+    force_register: yes
+  when: "('Overall Status: Current' not in subman_status.stdout )"
+  
+- name: Repository Stuff
+  command: >
+    subscription-manager repos --disable=* --enable=rhel-7-server-rpms --enable=rhel-server-rhscl-7-rpms --enable=rhel-7-server-satellite-capsule-6.2-rpms
+  
+- name: Install satellite-capsule packages
+  yum:
+    name: "satellite-capsule-{{ sat_ver }}"
+    state: installed
+ 
+- name: Capsule (pulp only)
+  include: capsule.yml 
+  when: 
+    - dhcp_svc != true
+    - dns_svc != true 
+    - tftp_svc != true
+
+- name: DHCP Capsule
+  include: dhcp-proxy.yml
+  when: 
+    - dhcp_svc 
+
+- name: DNS Capsule
+  include: dns-proxy.yml
+  when: 
+    - dns_svc 
+
+- name: TFTP Capsule
+  include: tftp-proxy.yml
+  when: 
+    - tftp_svc
