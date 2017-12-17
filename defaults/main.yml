@@ -1,8 +1,12 @@
 ---
 # defaults file for capsule
-satellite_fqdn: lpsrv-sat6.linuxlabs.example.com
-organization: linuxlabs
-activationkey: capsule
+# This role assumes you have a satellite in place. Enter your satellite 
+# fully-qualified-domain-name, the organization you are registering too as 
+# well as the activationkey you are using.
+
+satellite_fqdn: 
+organization: 
+activationkey: 
 
 # Set vars to true to enable these services. Further configuration is required if set to true.
 dhcp_svc: false
